@@ -45,19 +45,20 @@ pipeline {
         }
 
         stage('Deploy to EC2') {
-            steps {
-                script {
-                    sshagent(['ubuntu']) {
-                        withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                            sh """
-                            ssh -o StrictHostKeyChecking=no ubuntu@18.221.194.22 << EOF
-                                docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-                                docker pull fjeffrey/my-django-app
-                                docker stop my-django-app || true
-                                docker rm my-django-app || true
-                                docker run -d --name my-django-app -p 8081:8000 fjeffrey/my-django-app
-                            EOF
-                            """
+    steps {
+        script {
+            // Use the correct SSH credentials ID here (with private key)
+            sshagent(['ec2-ssh-key']) {  // 'ec2-ssh-key' should be the ID of your SSH credentials in Jenkins
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no -i /path/to/your/private/key.pem ubuntu@18.221.194.22 << EOF
+                        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+                        docker pull fjeffrey/my-django-app
+                        docker stop my-django-app || true
+                        docker rm my-django-app || true
+                        docker run -d --name my-django-app -p 8081:8000 fjeffrey/my-django-app
+                    EOF
+                    """
                         }
                     }
                 }
