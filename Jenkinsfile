@@ -5,10 +5,17 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the source code from GitHub
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-login', url: 'https://github.com/filandijeffrey/django-project.git']])
+                checkout scmGit(
+                    branches: [[name: '*/main']],
+                    extensions: [],
+                    userRemoteConfigs: [[
+                        credentialsId: 'github-login',
+                        url: 'https://github.com/filandijeffrey/django-project.git'
+                    ]]
+                )
             }
         }
-        
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -41,13 +48,16 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 script {
-                    // Deploy Docker container to EC2
-                    sh '''
-                    ssh -i /path/to/jenkins-docker.pem ec2-user@3.15.221.176 << EOF
-                    docker pull my-django-app
-                    docker run -d -p 8000:8000 my-django-app
-                    EOF
-                    '''
+                    // Use SSH key credentials managed by Jenkins for EC2 deployment
+                    sshagent(['ec2-ssh-key']) {
+                        sh '''
+                        ssh -o StrictHostKeyChecking=no ec2-user@3.15.221.176 << EOF
+                        docker pull my-django-app
+                        docker rm -f my-django-app || true
+                        docker run -d --name my-django-app -p 8000:8000 my-django-app
+                        EOF
+                        '''
+                    }
                 }
             }
         }
@@ -55,7 +65,6 @@ pipeline {
 
     post {
         always {
-            // Steps to be executed always (e.g., cleanup or notification)
             echo 'Pipeline finished, cleanup or notification can be added here.'
         }
     }
