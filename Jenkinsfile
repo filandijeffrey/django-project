@@ -49,7 +49,7 @@ pipeline {
                     // Use SSH key credentials managed by Jenkins for EC2 deployment
                     sshagent(['ec2-ssh-key']) {
                         sh '''
-                        ssh -o StrictHostKeyChecking=no ec2-user@18.221.194.22  << EOF
+                        ssh -o StrictHostKeyChecking=no ubuntu@18.221.194.22  << EOF
                         docker pull my-django-app
                         docker rm -f my-django-app || true
                         docker run -d --name my-django-app -p 8000:8000 my-django-app
