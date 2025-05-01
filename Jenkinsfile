@@ -47,7 +47,7 @@ pipeline {
         stage('Deploy to EC2') {
     steps {
         script {
-            sshagent(['ubuntu-ec2-key']) {
+            sshagent(['ubuntu-login']) {
                 sh '''
                     ssh -o StrictHostKeyChecking=no ubuntu@18.221.194.22 << EOF
                     docker login -u fjeffrey -p ${DOCKER_PASSWORD}
