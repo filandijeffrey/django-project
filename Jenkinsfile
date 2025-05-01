@@ -17,14 +17,13 @@ pipeline {
         }
 
         stage('Build Docker Image') {
-            steps {
-                script {
-                    // Build Docker image using the Dockerfile in the repository
-                    sh 'docker build -t my-django-app .'
-                }
-            }
+    steps {
+        script {
+            // Use correct image name for Docker Hub
+            sh 'docker build -t fjeffrey/my-django-app .'
         }
-
+    }
+}
         stage('Docker Hub Login') {
             steps {
                 script {
@@ -37,13 +36,12 @@ pipeline {
         }
 
         stage('Push Docker Image') {
-            steps {
-                script {
-                    // Push Docker image to Docker Hub
-                    sh 'docker push my-django-app'
-                }
-            }
+    steps {
+        script {
+            sh 'docker push fjeffrey/my-django-app'
         }
+    }
+}
 
         stage('Deploy to EC2') {
             steps {
