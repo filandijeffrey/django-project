@@ -45,19 +45,18 @@ pipeline {
         }
 
         stage('Deploy to EC2') {
-            steps {
-                script {
-                    sshagent(['ubuntu-login']) {
-                        withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                            sh """
-                            ssh -o StrictHostKeyChecking=no ubuntu@18.221.194.22 << EOF
-                                docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-                                docker pull fjeffrey/my-django-app
-                                docker stop my-django-app || true
-                                docker rm my-django-app || true
-                                docker run -d --name my-django-app -p 8081:8000 fjeffrey/my-django-app
-                            EOF
-                            """
+    steps {
+        script {
+            sshagent(['ubuntu-ec2-key']) {
+                sh '''
+                    ssh -o StrictHostKeyChecking=no ubuntu@18.221.194.22 << EOF
+                    docker login -u fjeffrey -p ${DOCKER_PASSWORD}
+                    docker pull fjeffrey/my-django-app
+                    docker stop my-django-app || true
+                    docker rm my-django-app || true
+                    docker run -d --name my-django-app -p 8081:8000 fjeffrey/my-django-app
+                    EOF
+                '''
                         }
                     }
                 }
@@ -70,4 +69,4 @@ pipeline {
             echo 'Pipeline finished, cleanup or notification can be added here.'
         }
     }
-}
+
