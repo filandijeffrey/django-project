@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'images/BocaLogo.png' %}" alt="School Logo" class="logo img-fluid" style="max-height: 100px;">
+                <span style="font-size: 3rem;">Boca Secondary School</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'gallery' %}">Gallery</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- About Content -->
+    <div class="container mt-5 text-center">
+        <h2>About Our School</h2>
+
+        <h3 class="mt-4">Short History</h3>
+
+        <p>On November 13th, 1978, the Boca Secondary School opened its doors; it was then called Boca Junior Secondary School. The uniform was khaki pants and white shirts for boys and khaki skirts and white shirts for girls. It was managed by the Ministry of Education. Mr. Orleans John became the first Principal in 1979.</p>
+
+        <p>In September 1983, the compound accommodated two (2) schools: the Secondary School and the Junior Secondary began its phasing out process. Mr. Spencer Edwards was the Principal of the Junior Secondary and Mr. Michael Anderson was the first Principal of the Secondary School. After the military invasion, Mr. Anderson left, and Mr. Spencer Edwards assumed responsibility as principal of both schools.</p>
+
+        <p>Many other principals or acting principals have left their indelible mark, for example, Mr. Leonard Greaux, the late Mr. Victor Antoine, Mrs. Pauline St. Paul, and Mr. Martin Mitchell. The school had a curriculum of thirty-two (32) subjects, many of which were technical/vocational subjects including Family and Resource Management, Clothing, Textiles & Fashion, Building Furniture Technology, Auto Mechanics, and Electronics and Electrical Technology.</p>
+
+        <h4 class="mt-4"><b>Motto:</b></h4>
+        <p>With Academic and Physical Skills, We Unite and Build.</p>
+
+        <h4 class="mt-4"><b>Mission Statement:</b></h4>
+        <p>Providing education with the aim of producing stable, disciplined, well-rounded individuals who are able to make a meaningful contribution to the development of society.</p>
+
+        <h4 class="mt-4"><b>Vision Statement:</b></h4>
+        <p>With God as our head, Boca Secondary School will conscientiously and with an exemplary spirit, promote discipline, respect for self and others, positive and productive attitudes, and holistic development, so that students can take their place in society as industrious, mature, responsible, stable citizens.</p>
+
+        <p class="mt-4"><b>Our grading system ensures a transparent, fair, and efficient way to track student progress.</b></p>
+
+        <img src="{% static 'images/BocaLogo.png' %}" class="img-fluid mt-3" alt="School Image">
+    </div>
+
+</body>
+</html>
