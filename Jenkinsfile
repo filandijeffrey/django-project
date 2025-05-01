@@ -47,7 +47,7 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 script {
-                    sshagent(['ubuntu']) {
+                    sshagent(['ubuntu-login']) {
                         withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
                             sh """
                             ssh -o StrictHostKeyChecking=no ubuntu@18.221.194.22 << EOF
