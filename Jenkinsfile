@@ -56,8 +56,8 @@ pipeline {
                         docker rm my-django-app || true
                         docker run -d --name my-django-app -p 8081:8000 fjeffrey/my-django-app
                     EOF
-                    """
-                }
+                   """
+                }   
             }
         }
     }
@@ -68,4 +68,5 @@ pipeline {
             echo 'Pipeline finished, cleanup or notification can be added here.'
         }
     }
+}
 }
