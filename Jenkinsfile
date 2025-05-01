@@ -1,69 +1,51 @@
 pipeline {
     agent any
 
-    environment {
-        EC2_HOST = 'ec2-user@3.15.221.176'      
-        IMAGE_NAME = 'myproject:latest'
-        CONTAINER_NAME = 'myproject'
-        REMOTE_DIR = '~/myproject'
-        DOCKERHUB_REPO = 'fjeffrey/myproject' 
-        DOCKERHUB_CREDENTIALS = 'docker-login' 
-    }
-
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                // Clone the code from GitHub repository
-                checkout scm
+                // Checkout the source code from GitHub
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'PAT_django', url: 'https://github.com/filandijeffrey/django-project.git']])
             }
         }
-
+        
         stage('Build Docker Image') {
             steps {
-                // Build Docker image from the Dockerfile in the repository
                 script {
-                    sh 'docker build -t $IMAGE_NAME .'
+                    // Build Docker image using the Dockerfile in the repository
+                    sh 'docker build -t my-django-app .'
                 }
             }
         }
 
-        stage('Login to Docker Hub') {
+        stage('Docker Hub Login') {
             steps {
-                // Login to Docker Hub
-                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    script {
-                        sh """
-                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                        """
+                script {
+                    // Log in to Docker Hub using credentials stored in Jenkins
+                    withCredentials([usernamePassword(credentialsId: 'docker-login', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
                     }
                 }
             }
         }
 
-        stage('Push Docker Image to Docker Hub') {
+        stage('Push Docker Image') {
             steps {
-                // Push the built image to Docker Hub
                 script {
-                    sh 'docker tag $IMAGE_NAME $DOCKERHUB_REPO'
-                    sh 'docker push $DOCKERHUB_REPO'
+                    // Push Docker image to Docker Hub
+                    sh 'docker push my-django-app'
                 }
             }
         }
 
-        stage('Deploy to EC2 and Run Container') {
+        stage('Deploy to EC2') {
             steps {
-                sshagent (credentials: ['ec2-ssh-key']) { // 'ec2-ssh-key' should match your Jenkins credentials ID
+                script {
+                    // Deploy Docker container to EC2
                     sh '''
-                    echo "Copying files to EC2..."
-                    scp -o StrictHostKeyChecking=no -r . $EC2_HOST:$REMOTE_DIR
-
-                    echo "Logging into EC2 and running Docker container..."
-                    ssh -o StrictHostKeyChecking=no $EC2_HOST << EOF
-                        cd $REMOTE_DIR
-                        docker pull $DOCKERHUB_REPO
-                        docker stop $CONTAINER_NAME || true
-                        docker rm $CONTAINER_NAME || true
-                        docker run -d -p 8000:8000 --name $CONTAINER_NAME $DOCKERHUB_REPO
+                    ssh -i /path/to/jenkins-docker.pem ec2-user@3.15.221.176 << EOF
+                    docker pull my-django-app
+                    docker run -d -p 8000:8000 my-django-app
                     EOF
                     '''
                 }
@@ -73,7 +55,8 @@ pipeline {
 
     post {
         always {
-            // Clean up actions (if needed)
+            // Steps to be executed always (e.g., cleanup or notification)
+            echo 'Pipeline finished, cleanup or notification can be added here.'
         }
     }
 }
