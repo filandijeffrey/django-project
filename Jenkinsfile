@@ -49,7 +49,7 @@ pipeline {
         script {
             sshagent(['ubuntu-login']) {
                 sh '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@18.221.194.22 << EOF
+                    ssh -o StrictHostKeyChecking=no ubuntu@3.138.172.24 << EOF
                     docker login -u fjeffrey -p ${DOCKER_PASSWORD}
                     docker pull fjeffrey/my-django-app
                     docker stop my-django-app || true
